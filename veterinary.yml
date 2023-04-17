@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veterinary-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms
+  template:
+    metadata:
+      labels:
+        app: ms
+        tier: backend
+    spec:
+      containers:
+      - name: veterinary-ms
+        image: hazemkaied/my-veterinary-ms:1
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://db-service:5432/veterinary_db
+        ports:
+        - name: vet-port
+          containerPort: 8092
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: veterinary-service
+spec:
+  ports:
+  - port: 8092
+    targetPort: 8092
+    #nodePort: 30001
+    protocol: TCP
+  selector:
+    app: ms
+  type: LoadBalancer
+   
+
+
+
+
